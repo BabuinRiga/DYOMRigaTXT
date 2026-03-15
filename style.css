@@ -23,7 +23,7 @@ body {
 }
 
 :root {
-    --load-color: 0, 95, 205;
+    --load-color: 205, 120, 0;
 
     --topbar-color: #eee;
     --middle-color: #8f8f8f;
