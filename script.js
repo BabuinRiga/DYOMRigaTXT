@@ -482,6 +482,8 @@ let dragCounter = 0;
 
 document.addEventListener("dragenter", (e) => {
     e.preventDefault();
+
+    if (!e.dataTransfer.types.includes("Files")) return;
     dragCounter++;
     
     if (currentFile) {
@@ -494,6 +496,8 @@ document.addEventListener("dragenter", (e) => {
 
 document.addEventListener("dragleave", (e) => {
     e.preventDefault();
+
+    if (!e.dataTransfer.types.includes("Files")) return;
     dragCounter--;
     
     if (dragCounter === 0) {
@@ -513,6 +517,7 @@ document.addEventListener("dragover", (e) => {
 document.addEventListener("drop", async (e) => {
     e.preventDefault();
     
+    if (!e.dataTransfer.types.includes("Files")) return;
     dragCounter = 0;
     loadFile.classList.remove("dragover");
 
