@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>DYOM TXT Editor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="topbar">
+    <div id="left">
+        <div class="title">DYOM Riga TXT</div>
+        <label class="topbarButton">
+            Открыть файл
+            <input type="file" id="fileInput" multiple>
+        </label>
+        <button class="topbarButton" id="fileSave">Сохранить</button>
+        <div id="topbarObjMenu" style="display: none;">
+            <div class="topbarSeparator"></div>
+            <div class="dropdown">
+                <button class="topbarButton">Текст целей</button>
+                <div class="dropdownMenu">
+                    <button class="dropdownItem" id="copyObjectives">Скопировать всё</button>
+                    <button class="dropdownItem" id="pasteObjectives">Вставить всё</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="right">
+        <div class="title">By Babuin Riga</div>
+
+        <div class="dropdown">
+            <button class="topbarButton" id="fileCopy">Поддержать</button>
+            <div class="dropdownMenu">
+                <a href="https://discord.gg/KF3ZwDS6sH" class="dropdownItem" target="_blank">Discord</a>
+                <button class="dropdownItem">Сбер: 2202 2069 3290 4951</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tabs"></div>
+
+<div id="main">
+    <div id="loadFilePanel">
+        <div id="dragLoadFile"></div>
+        <div id="loadFile">
+            <svg id="iconUploadBig" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 16V7.85L8.4 10.45L7 9L12 4L17 9L15.6 10.45L13 7.85V16H11ZM6 20C5.45 20 4.97933 19.8043 4.588 19.413C4.19667 19.0217 4.00067 18.5507 4 18V15H6V18H18V15H20V18C20 18.55 19.8043 19.021 19.413 19.413C19.0217 19.805 18.5507 20.0007 18 20H6Z"/>
+            </svg>
+            <p>Перетащите файлы сюда или нажмите "Открыть файл"</p>
+        </div>
+    </div>
+
+    <div id="editor">
+        <div class="editorPanel" id="objectivesPanel"></div>
+        <div id="mainPanel">
+            <div id="objectiveEdit">
+                <div id="objectiveTitle">
+                    <h3>Редактор цели</h3>
+                    <h4>Цель №<span id="objectiveNumber">0</span></h4>
+                </div>
+                <div class="inputBox">
+                    <textarea rows="5" cols="50" maxlength="100" id="missionObjective" placeholder="Текст цели" data-field="objective"></textarea>
+                    <span class="charCount">0/100</span>
+                </div>
+                <table class="tokenTable">
+                <thead>
+                    <tr>
+                    <th scope="col">Токены</th>
+                    <th scope="col">Текст</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    <th scope="row">~w~/~s~</th>
+                    <td class="tokenPreview">Белый</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">~r~</th>
+                    <td class="tokenPreview">Красный</td>
+                    </tr>
+                    <tr">
+                    <th scope="row">~g~</th>
+                    <td class="tokenPreview">Зеленый</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">~b~</th>
+                    <td class="tokenPreview">Синий</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">~y~</th>
+                    <td class="tokenPreview">Желтый</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">~p~</th>
+                    <td class="tokenPreview">Розовый</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">~l~</th>
+                    <td class="tokenPreview">Черный</td>
+                    </tr>
+                    <tr>
+                    <th scope="row">~h~</th>
+                    <td class="tokenPreview">Сделать светлее</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                    <th scope="row" colspan="2">Больше: <a href="https://gtamods.com/wiki/GXT#Tokens" target="_blank">https://gtamods.com/wiki/GXT#Tokens</a></th>
+                    </tr>
+                </tfoot>
+                </table>
+            </div>
+            <div id="objectivePreview">
+                <p></p>
+            </div>
+        </div>
+        <div class="editorPanel" id="missionPanel">
+            <h3>Название миссии</h3>
+            <div class="inputBox">
+                <input type="text" maxlength="100" id="missionName" placeholder="Название" data-field="name">
+                <span class="charCount">0/100</span>
+            </div>
+            <h4>Автор миссии</h4>
+            <div class="inputBox">
+                <input type="text" maxlength="100" id="missionAuthor" placeholder="Автор" data-field="author">
+                <span class="charCount">0/100</span>
+            </div>
+            <br>
+            <h4>Интро миссии</h4>
+            <div class="inputBox">
+                <textarea rows="5" cols="50" maxlength="100" id="missionIntro1" placeholder="Интро 1" data-field="intro1"></textarea>
+                <span class="charCount">0/100</span>
+            </div>
+            <div class="inputBox">
+                <textarea rows="5" cols="50" maxlength="100" id="missionIntro2" placeholder="Интро 2" data-field="intro2"></textarea>
+                <span class="charCount">0/100</span>
+            </div>
+            <div class="inputBox">
+                <textarea rows="5" cols="50" maxlength="100" id="missionIntro3" placeholder="Интро 3" data-field="intro3"></textarea>
+                <span class="charCount">0/100</span>
+            </div>
+            <p class="tip">Стерите везде надписи если не хотите чтобы текст появлялся</p>
+            <br>
+            <h4>Аудио-код миссии</h4>
+            <div class="inputBox">
+                <input type="text" maxlength="15" id="missionAudioCode" placeholder="Аудио-код" data-field="audioCode">
+                <span class="charCount">0/15</span>
+            </div>
+        </div>
+    </div>
+    <!-- <textarea id="textEditor"></textarea> -->
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

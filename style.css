@@ -1,0 +1,501 @@
+html, body {
+    height: 100%;
+    font-family: Arial, sans-serif;
+
+    background-color: var(--topbar-color);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: "FuturaLT";
+    src: url("data/FuturaCyrillicBold.ttf") format("truetype");
+    font-weight: bold;
+}
+
+:root {
+    --load-color: 0, 95, 205;
+
+    --topbar-color: #eee;
+    --middle-color: #8f8f8f;
+    --topbar-button-color: #ccc;
+
+    --editor-color: #fafafa;
+    --editor-border-color: #e0e0e0;
+}
+
+
+
+#topbar {
+    display: flex;
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 0 15px;
+    background-color: var(--topbar-color);
+    justify-content: space-between;
+}
+
+#topbar #left {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+#topbar #left .title {
+    padding: 0 15px 0 0;
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--close-button);
+}
+
+#topbar #right {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    flex-direction: row-reverse;
+}
+
+#topbar #right .title {
+    padding: 0 0 0 15px;
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--close-button);
+}
+
+.topbarButton {
+    background-color: var(--topbar-color);
+    border: none;
+    padding: 10px 20px;
+
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.topbarButton:hover {
+    background-color: var(--topbar-button-color);
+}
+
+#fileInput {
+    display: none;
+}
+
+.topbarSeparator {
+    width: 1px;
+    height: 20px;
+    background-color: var(--editor-border-color);
+}
+
+.dropdown {
+    position: relative;
+    z-index: 100;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    min-width: 160px;
+    background-color: var(--topbar-color);
+
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dropdown:hover .dropdownMenu {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dropdownItem {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    text-align: left;
+
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.dropdownItem:hover {
+    background-color: var(--topbar-button-color);
+}
+
+
+
+
+
+
+#tabs {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 5px;
+    margin: 0 25px;
+    padding: 10px 0 0;
+    overflow-x: auto;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-width: 200px;
+    max-width: 200px;
+    gap: 8px;
+
+    background: var(--editor-color);
+    border-bottom: var(--topbar-color) solid 4px;
+    border-radius: 10px 10px 0 0;
+    padding: 6px 10px;
+
+    cursor: pointer;
+    user-select: none;
+}
+
+/* .tab:hover {
+    background: color-mix(in srgb, var(--editor-color) 85%, black);;
+} */
+
+.tab.dragging {
+    opacity: 0.15;
+}
+
+.tab.active {
+    border-bottom: 0px;
+}
+
+.tabText {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tabClose {
+    display: flex;
+    width: 18px;
+    height: auto;
+
+    border: none;
+    background: transparent;
+    fill: var(--middle-color);
+
+    cursor: pointer;
+    font-size: 14px;
+}
+
+
+
+
+
+
+
+
+#main {
+    flex: 1 1 auto;
+    display: flex;
+    position: relative;
+
+    background: var(--editor-color);
+    border-radius: 25px 25px 0 0;
+
+    min-height: 0;
+    overflow: hidden;
+}
+
+#editor {
+    display: none;
+    width: 100%;
+    position: relative;
+
+    padding: 15px 15px 0 15px;
+
+    overflow-y: hidden;
+    justify-content: space-between;
+}
+
+#mainPanel {
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.editorPanel {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 25%;
+    height: 100%;
+    
+    border: var(--editor-border-color), solid 1px;
+    border-radius: 12px 12px 0 0;
+    padding: 15px;
+}
+
+
+/* ------------------- Ввод текста ------------------- */
+
+input[type="text"] {
+    padding: 8px;
+    border: var(--editor-border-color) solid 1px;
+    border-radius: 5px;
+}
+
+textarea {
+    padding: 8px;
+    border: var(--editor-border-color) solid 1px;
+    border-radius: 5px;
+
+    resize: vertical;
+}
+
+.tip {
+    font-size: 12px;
+    color: var(--middle-color);
+}
+
+.inputBox {
+    display: grid;
+    position: relative;
+}
+
+.charCount {
+    position: absolute;
+    right: 12px;
+    top: -6px;
+    font-size: 11px;
+    background-color: var(--editor-color);
+    color: var(--middle-color);
+}
+
+/* ------------------- Редактор целей ------------------- */
+
+#objectiveEdit {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    flex-direction: column;
+}
+
+#objectivePreview {
+    width: 100%;
+    height: 250px;
+    padding: 8px;
+    background-color: black;
+
+    resize: vertical;
+    font-family: "FuturaLT", sans-serif;
+}
+
+#objectivePreview p {
+    color: #B4B7BC;
+    font-size: 25px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#objectiveTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tokenTable {
+    border-collapse: collapse;
+}
+
+.tokenTable th,
+.tokenTable td {
+    border: 1px solid var(--editor-border-color);
+    padding: 6px 10px;
+}
+
+.tokenTable tfoot th {
+    font-weight: normal;
+}
+
+/* ------------------- Таблица целей ------------------- */
+
+#objectivesPanel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: 0;
+}
+
+.tableHeader {
+    display: grid;
+    grid-template-columns: 40px 40px 1fr;
+    padding: 8px 10px;
+    font-weight: bold;
+    font-size: 12px;
+    color: var(--middle-color);
+    border-bottom: 2px solid var(--editor-border-color);
+    margin-top: 10px;
+    user-select: none;
+}
+
+.objectivesList {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0;
+    padding-right: 5px;
+    padding-bottom: 15px;
+}
+
+.objectivesList::-webkit-scrollbar {
+    width: 6px;
+}
+.objectivesList::-webkit-scrollbar-thumb {
+    background: var(--middle-color);
+    border-radius: 3px;
+}
+
+.objectiveRow {
+    display: grid;
+    grid-template-columns: 40px 40px 1fr;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: var(--editor-border-color) solid 1px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.objectiveRow:hover {
+    background-color: #f0f0f0;
+}
+
+.objectiveRow.active {
+    background-color: #e6f2ff;
+}
+
+.objIndex, .objIcon, .objName {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.objIndex {
+    font-size: 12px;
+    color: var(--middle-color);
+    text-align: center;
+}
+
+.objIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    fill: var(--middle-color);
+    margin: 0 auto;
+}
+
+.objName {
+    font-size: 13px;
+}
+
+
+
+
+
+
+
+
+
+
+
+#loadFilePanel {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#loadFilePanel.hidden {
+    display: none;
+}
+
+#loadFilePanel.overlay {
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100;
+    backdrop-filter: blur(3px);
+}
+
+#loadFilePanel.overlay #loadFile {
+    background: rgb(var(--load-color), 0.10);
+    border-color: var(--editor-color);
+    transition: none;
+}
+#loadFilePanel.overlay #loadFile p,
+#loadFilePanel.overlay #iconUploadBig {
+    color: var(--editor-color);
+    fill: var(--editor-color);
+}
+
+#dragLoadFile {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#loadFile {
+    display: flex;
+    max-width: 525px;
+    background: rgb(var(--load-color), 0.10);
+    border: dashed 4px rgb(var(--load-color));
+    border-radius: 25px;
+    flex-direction: column;
+
+    align-items: center;
+    text-align: center;
+
+    padding: 100px;
+
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+}
+
+#loadFile p {
+    color: rgb(var(--load-color));
+    font-size: larger;
+}
+
+#iconUploadBig {
+    width: 100px;
+    height: 100px;
+    fill: rgb(var(--load-color));
+}
+
+/* #loadFile:hover {
+    transform: scale(1.05);
+    background-color: rgb(var(--load-color), 0.05);
+    border-color: #0087ff;
+} */
+
+#loadFile.dragover {
+    transform: scale(1.1);
+    background-color: rgb(var(--load-color), 0.25);
+    /* border-color: #005fcc; */
+}
