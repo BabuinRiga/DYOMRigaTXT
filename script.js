@@ -3,6 +3,8 @@ const win1251Bytes = new Uint8Array(256);
 for (let i = 0; i < 256; i++) win1251Bytes[i] = i;
 const win1251Chars = win1251Decoder.decode(win1251Bytes);
 
+// --------------------------------------------------------------------------- Управление файлами
+
 let currentFile = null
 let files = []
 
@@ -45,7 +47,7 @@ async function closeFile(id) {
     }
 }
 
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------- DYOM
 
 async function parseDYOM(file) {
     const buffer = await file.arrayBuffer();
@@ -189,7 +191,7 @@ async function saveDYOM(id) {
     URL.revokeObjectURL(url);
 }
 
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------- Редактор
 
 async function createTab(name, id) {
     const tab = document.createElement("div")
@@ -351,13 +353,12 @@ function renderEditor() {
 }
 
 
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------- Перетаскивание вкладок
 
 
 let draggedTab = null
 
 function initTabDrag(tab) {
-
     tab.addEventListener("dragstart", () => {
         draggedTab = tab
         tab.classList.add("dragging")
@@ -366,11 +367,9 @@ function initTabDrag(tab) {
     tab.addEventListener("dragend", () => {
         tab.classList.remove("dragging")
     })
-
 }
 
 tabs.addEventListener("dragover", e => {
-
     e.preventDefault()
 
     const afterElement = getDragAfterElement(tabs, e.clientX)
@@ -380,11 +379,9 @@ tabs.addEventListener("dragover", e => {
     } else {
         tabs.insertBefore(draggedTab, afterElement)
     }
-
 })
 
 function getDragAfterElement(container, x) {
-
     const elements = [...container.querySelectorAll(".tab:not(.dragging)")]
 
     return elements.reduce((closest, child) => {
@@ -401,9 +398,9 @@ function getDragAfterElement(container, x) {
     }, { offset: Number.NEGATIVE_INFINITY }).element
 }
 
+// --------------------------------------------------------------------------- Функции с текстом
 
-// ---------------------------------------------------------------------------
-
+// ---------------- Перевод SANLtd
 
 const ruChar = "йцукенгшщзхъфывапролджэ\ячсмитьбю.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭ/ЯЧСМИТЬБЮ,ёЁ";
 const srcChar = "ќ yke®™ҐЎџx§ЁўaЈpoћљ›Є\¬¤cЇњ¦©—«.†‰YKE­‚ЋЉ€XђЃ‘‹AЊPO‡ѓ„“/•ЌC–…Џ’Ђ”,eЕ";
@@ -421,6 +418,8 @@ function ruTextToSource(text) {
         return index !== -1 ? srcChar[index] : c
     }).join("")
 }
+
+// ---------------- Копирование и вставка текстов целей
 
 copyObjectives.addEventListener("click", () => {
     const file = files.find(f => f.id === currentFile);
@@ -473,7 +472,59 @@ pasteObjectives.addEventListener("click", async () => {
     }
 });
 
-// ---------------------------------------------------------------------------
+// ---------------- Ввод текста
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.target.dataset.field && e.target.dataset.field !== "audioCode") {
+        e.preventDefault();
+        
+        document.execCommand("insertText", false, "~n~");
+    }
+});
+
+document.addEventListener("paste", (e) => {
+    if (e.target.dataset.field && e.target.dataset.field !== "audioCode") {
+        e.preventDefault();
+        
+        let pasteText = (e.clipboardData || window.clipboardData).getData("text");
+        pasteText = pasteText.replace(/\n/g, "~n~");
+        
+        document.execCommand("insertText", false, pasteText);
+    }
+});
+
+document.addEventListener("input", (e) => {
+    const field = e.target.dataset.field;
+    if (!field) return;
+
+    const file = files.find(f => f.id === currentFile);
+    if (!file) return;
+
+    if (field === "objective") {
+        renderPreview(e.target.value);
+        if (file.currentObjIndex !== -1) {
+            file.data.objectives[file.currentObjIndex].text = ruTextToSource(e.target.value);
+            file.data.memory.allObjctvTXT[file.currentObjIndex] = ruTextToSource(e.target.value);
+        }
+        return;
+    }
+
+    file.data[field] = ruTextToSource(e.target.value);
+});
+
+document.querySelectorAll("input[maxlength], textarea[maxlength]").forEach(el => {
+    const counter = el.parentElement.querySelector(".charCount")
+
+    function updateCount() {
+        counter.textContent = `${el.value.length}/${el.maxLength}`
+    }
+
+    el.addEventListener("input", updateCount)
+    updateCount()
+})
+
+
+// --------------------------------------------------------------------------- Загрузка файлов
 
 const loadFilePanel = document.getElementById("loadFilePanel");
 const loadFile = document.getElementById("loadFile");
@@ -554,7 +605,7 @@ fileSave.addEventListener("click", () => {
     }
 })
 
-// ---------------------------------------------------------------------------
+// --------------------------------------------------------------------------- Предпросмотр текста целей
 
 const textColors = {
     "r": "#901D23",
@@ -639,58 +690,6 @@ function renderPreview(text) {
     resultHTML += '</span>';
     previewContainer.innerHTML = resultHTML;
 }
-
-// ---------------------------------------------------------------------------
-
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && e.target.dataset.field && e.target.dataset.field !== "audioCode") {
-        e.preventDefault();
-        
-        document.execCommand("insertText", false, "~n~");
-    }
-});
-
-document.addEventListener("paste", (e) => {
-    if (e.target.dataset.field && e.target.dataset.field !== "audioCode") {
-        e.preventDefault();
-        
-        let pasteText = (e.clipboardData || window.clipboardData).getData("text");
-        pasteText = pasteText.replace(/\n/g, "~n~");
-        
-        document.execCommand("insertText", false, pasteText);
-    }
-});
-
-document.addEventListener("input", (e) => {
-    const field = e.target.dataset.field;
-    if (!field) return;
-
-    const file = files.find(f => f.id === currentFile);
-    if (!file) return;
-
-    if (field === "objective") {
-        renderPreview(e.target.value);
-        if (file.currentObjIndex !== -1) {
-            file.data.objectives[file.currentObjIndex].text = ruTextToSource(e.target.value);
-            file.data.memory.allObjctvTXT[file.currentObjIndex] = ruTextToSource(e.target.value);
-        }
-        return;
-    }
-
-    // Для всех остальных полей
-    file.data[field] = ruTextToSource(e.target.value);
-});
-
-document.querySelectorAll("input[maxlength], textarea[maxlength]").forEach(el => {
-    const counter = el.parentElement.querySelector(".charCount")
-
-    function updateCount() {
-        counter.textContent = `${el.value.length}/${el.maxLength}`
-    }
-
-    el.addEventListener("input", updateCount)
-    updateCount()
-})
 
 // ---------------------------------------------------------------------------
 
