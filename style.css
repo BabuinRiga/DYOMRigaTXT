@@ -137,6 +137,11 @@ body {
     background-color: var(--topbar-button-color);
 }
 
+#topbarObjMenu {
+    display: flex;
+    align-items: center;
+}
+
 #sberButton {
     user-select: text;
 }
